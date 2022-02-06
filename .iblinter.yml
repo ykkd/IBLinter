@@ -1,2 +1,3 @@
 enabled_rules:
   - ambiguous
+  - hides_bottom_bar

@@ -13,6 +13,7 @@ extension Rules {
         
         static var identifier = "hides_bottom_bar"
         static var description = "Check if hidesBottomBarWhenPushed is enabled"
+        static let isDefault: Bool = true
         
         private let excluded: [String]
         
@@ -25,18 +26,18 @@ extension Rules {
         func validate(storyboard: StoryboardFile) -> [Violation] {
             guard let scenes = storyboard.document.scenes else { return [] }
             let viewControllers = scenes.compactMap { $0.viewController?.viewController }
-            return viewControllers.compactMap { validate(for: $0, file: storyboard) }
+            return viewControllers.flatMap { validate(for: $0, file: storyboard) }
         }
         
         private func validate<T: InterfaceBuilderFile>(for viewController: ViewControllerProtocol, file: T) -> Violation? {
-            guard let hidesBottomBar = viewController.hidesBottomBarWhenPushed,
-                  excluded.isEmpty,
-                  !excluded.contains(where: { $0 == viewController.customClass ?? viewController.elementClass })
-                   else {
-                return nil
-            }
+//            guard let hidesBottomBar = viewController.hidesBottomBarWhenPushed,
+//                  excluded.isEmpty,
+//                  !excluded.contains(where: { $0 == viewController.customClass ?? viewController.elementClass })
+//                   else {
+//                return nil
+//            }
             let message = "\(viewController.customClass ?? viewController.elementClass).hidesBottomBarWhenPushed is not enabled. id: \(viewController.id)"
-            return hidesBottomBar ? nil : Violation(pathString: file.pathString, message: message, level: .error)
+            return Violation(pathString: file.pathString, message: message, level: .error)
         }
     }
 }
